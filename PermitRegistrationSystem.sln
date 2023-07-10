@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.1.32414.318
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PermitRegistrationSystem", "PermitRegistrationSystem.csproj", "{4C5846EC-13BB-48E1-8DFD-2AD83B34C5FF}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{4C5846EC-13BB-48E1-8DFD-2AD83B34C5FF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4C5846EC-13BB-48E1-8DFD-2AD83B34C5FF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4C5846EC-13BB-48E1-8DFD-2AD83B34C5FF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4C5846EC-13BB-48E1-8DFD-2AD83B34C5FF}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {DFABB761-B42B-4F14-93E3-1996EF4B6E0A}
+	EndGlobalSection
+EndGlobal
