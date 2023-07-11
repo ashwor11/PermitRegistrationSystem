@@ -31,8 +31,8 @@ namespace PermitRegistrationSystem.Controllers
             return Ok();
         }
 
-        [HttpPost("delete")]
-        public async Task<IActionResult> Delete([FromBody] int id)
+        [HttpDelete("delete/{id}")]
+        public async Task<IActionResult> Delete([FromRoute] int id)
         {
             _permissionRepository.Delete(id);
             return Ok();
@@ -53,8 +53,8 @@ namespace PermitRegistrationSystem.Controllers
             IList<Permission> permissions = _permissionRepository.GetAll();
             return Ok(permissions);
         }
-        [HttpGet("getbyid")]
-        public async Task<IActionResult> GetById([FromQuery] int id)
+        [HttpGet("getbyid/{id}")]
+        public async Task<IActionResult> GetById([FromRoute] int id)
         {
             Permission permission = _permissionRepository.GetById(id);
             return Ok(permission);
@@ -62,8 +62,8 @@ namespace PermitRegistrationSystem.Controllers
 
         
 
-        [HttpGet("getByPersonId")]
-        public async Task<IActionResult> GetByPersonId([FromQuery] int personId)
+        [HttpGet("getByPersonId/{personId}")]
+        public async Task<IActionResult> GetByPersonId([FromRoute] int personId)
         {
             PermissionByUserDto permissionByUserDto = _permissionRepository.GetByPersonId(personId);
             return Ok(permissionByUserDto);

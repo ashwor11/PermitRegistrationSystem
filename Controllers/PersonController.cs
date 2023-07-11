@@ -24,16 +24,16 @@ namespace PermitRegistrationSystem.Controllers
         {
             Person person = _mapper.Map<Person>(personToRegister);
             _personRepository.Create(person);
-            return Ok();
+            return Ok("created");
         }
-        [HttpPost("delete")]
-        public IActionResult DeletePerson([FromBody] int id)
+        [HttpDelete("delete/{id}")]
+        public IActionResult DeletePerson([FromRoute] int id)
         {
             _personRepository.Delete(id);
             return Ok();
         }
-        [HttpGet("get/by/id")]
-        public IActionResult GetPersonById([FromQuery] int id)
+        [HttpGet("getbyid/{id}")]
+        public IActionResult GetPersonById([FromRoute] int id)
         {
             Person result = _personRepository.GetById(id);
             return Ok(result);

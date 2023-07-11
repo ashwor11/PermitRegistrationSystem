@@ -55,7 +55,7 @@ namespace PermitRegistrationSystem.Repositories
             }
 
 
-            if (permission.Reason != null)
+            if (permission.Reason != null && permission.Reason != "")
             {
                 updateColumns.Add("reason = @Reason");
                 parameters.Add("@Reason", permission.Reason);
