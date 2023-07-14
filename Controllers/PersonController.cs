@@ -1,14 +1,27 @@
-﻿using AutoMapper;
+﻿using System.Security.Claims;
+using Application.Features.Permissions.Commands.DeletePermission;
+using Application.Features.Permissions.Queries.GetByIdPermission;
+using Application.Features.Persons.Commands.AddPerson;
+using Application.Features.Persons.Commands.DeletePerson;
+using Application.Features.Persons.Commands.Login;
+using Application.Features.Persons.Commands.UpdatePerson;
+using Application.Features.Persons.Dtos;
+using Application.Features.Persons.Models;
+using Application.Features.Persons.Queries.GerByIdPerson;
+using Application.Features.Persons.Queries.GetAllPersons;
+using Application.Repositories;
+using AutoMapper;
+using Core.Security.JWT;
+using Domain.Entities;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using PermitRegistrationSystem.Models;
-using PermitRegistrationSystem.Repositories.Abstract;
+
 
 namespace PermitRegistrationSystem.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class PersonController : ControllerBase
+    public class PersonController : BaseController
     {
         private readonly IPersonRepository _personRepository;
         private readonly IMapper _mapper;
@@ -20,39 +33,51 @@ namespace PermitRegistrationSystem.Controllers
         }
 
         [HttpPost("create")]
-        public IActionResult CreatePerson([FromBody] PersonToRegister personToRegister)
+        public async Task<IActionResult> CreatePerson([FromBody] PersonToRegisterDto personToRegisterDto)
         {
-            Person person = _mapper.Map<Person>(personToRegister);
-            _personRepository.Create(person);
-            return Ok("created");
+            AddPersonCommand command = new AddPersonCommand() { PersonToRegisterDto = personToRegisterDto };
+            AccessToken result = await Mediator.Send(command);
+            return Ok(result);
         }
         [HttpDelete("delete/{id}")]
-        public IActionResult DeletePerson([FromRoute] int id)
+        public async Task<IActionResult> DeletePerson([FromRoute] int id)
         {
-            _personRepository.Delete(id);
-            return Ok();
+            DeletePersonCommand command = new DeletePersonCommand() { Id = id };
+            DeletedPersonDto result = await Mediator.Send(command);
+            return Ok(result);
         }
         [HttpGet("getbyid/{id}")]
-        public IActionResult GetPersonById([FromRoute] int id)
+        public async Task<IActionResult> GetPersonById([FromRoute] int id)
         {
-            Person result = _personRepository.GetById(id);
+            GetByIdPersonQuery query = new() { Id = id };
+            GetByIdPersonDto result = await Mediator.Send(query);
             return Ok(result);
         }
 
         [HttpPost("update")]
-        public IActionResult UpdatePersonById([FromBody] PersonToUpdate personToUpdate)
+        public async Task<IActionResult> UpdatePersonById([FromBody] PersonToUpdateDto personToUpdateDto)
         {
-            Person person = _mapper.Map<Person>(personToUpdate);
-            _personRepository.Update(person);
-            Person result = _personRepository.GetById(person.Id);
-            return Ok(result);
+           UpdatePersonCommand command = new UpdatePersonCommand() { PersonToUpdateDto = personToUpdateDto };
+           UpdatedPersonDto result = await Mediator.Send(command);
+           return Ok(result);
 
         }
 
         [HttpGet("getall")]
-        public IActionResult GetAll()
+        public async Task<IActionResult> GetAll()
         {
-            IList<Person> result = _personRepository.GetAll();
+            IList<Claim> xd = HttpContext.User.Claims.ToList();
+           GetAllPersonsQuery query = new GetAllPersonsQuery();
+           GetAllPersonsModel model = await Mediator.Send(query);
+           return Ok(model);
+        }
+
+        [HttpPost("login")]
+        public async Task<IActionResult> Login([FromBody] PersonForLoginDto personForLoginDto)
+        {
+            LoginCommand command = new LoginCommand() { PersonForLoginDto = personForLoginDto };
+            AccessToken result = await Mediator.Send(command);
+            if (result == null) return BadRequest("Not logged in");
             return Ok(result);
         }
 

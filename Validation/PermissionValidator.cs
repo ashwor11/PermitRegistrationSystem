@@ -1,5 +1,5 @@
-﻿using FluentValidation;
-using PermitRegistrationSystem.Models;
+﻿using Domain.Entities;
+using FluentValidation;
 
 namespace PermitRegistrationSystem.Validation;
 

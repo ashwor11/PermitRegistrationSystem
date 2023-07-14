@@ -1,9 +1,12 @@
 ﻿using System.Data;
 using System.Reflection;
 using System.Runtime.CompilerServices;
+using Application;
+using Core;
+using MediatR;
 using MySql.Data.MySqlClient;
-using PermitRegistrationSystem.Repositories;
-using PermitRegistrationSystem.Repositories.Abstract;
+using Persistence;
+
 
 namespace PermitRegistrationSystem;
 
@@ -19,10 +22,10 @@ public static class ServiceRegistration
             return new MySqlConnection(connectionString);
         });
 
-        services.AddScoped<IPermissionRepository, PermissionRepository>();
-        services.AddScoped<IPersonRepository, PersonRepository>();
-        services.AddAutoMapper(Assembly.GetExecutingAssembly());
 
+        services.AddApplicationServices();
+        services.AddPersistenceServices(configuration);
+        services.AddCoreServices(configuration);
         Dapper.DefaultTypeMap.MatchNamesWithUnderscores = true;
 
         return services;

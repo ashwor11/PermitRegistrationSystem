@@ -1,16 +1,23 @@
-﻿using AutoMapper;
+﻿using Application.Features.Permissions.Commands.AddPermission;
+using Application.Features.Permissions.Commands.DeletePermission;
+using Application.Features.Permissions.Commands.UpdatePermission;
+using Application.Features.Permissions.Dtos;
+using Application.Features.Permissions.Models;
+using Application.Features.Permissions.Queries.GetAllPermission;
+using Application.Features.Permissions.Queries.GetByIdPermission;
+using Application.Features.Permissions.Queries.GetPermissionByPersonId;
+using Application.Repositories;
+using AutoMapper;
+using Domain.Entities;
 using FluentValidation.Results;
 using Microsoft.AspNetCore.Mvc;
-using PermitRegistrationSystem.Models;
-using PermitRegistrationSystem.Repositories;
-using PermitRegistrationSystem.Repositories.Abstract;
 using PermitRegistrationSystem.Validation;
 
 namespace PermitRegistrationSystem.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class PermissionController : ControllerBase
+    public class PermissionController : BaseController
     {
         private readonly IPermissionRepository _permissionRepository;
         private readonly IMapper _mapper;
@@ -23,41 +30,42 @@ namespace PermitRegistrationSystem.Controllers
 
 
         [HttpPost("create")]
-        public async Task<IActionResult> Create([FromBody] PermissionToCreate permissionToCreate)
+        public async Task<IActionResult> Create([FromBody] PermissionToCreateDto permissionToCreateDto)
         {
-            Permission permission = _mapper.Map<Permission>(permissionToCreate);
-            ValidatePermission(permission);
-            _permissionRepository.Create(permission);
-            return Ok();
+            AddPermissionCommand command = new() { PermissionToCreateDto = permissionToCreateDto };
+            AddedPermissionDto result = await Mediator.Send(command);
+            return Ok(result);
         }
 
         [HttpDelete("delete/{id}")]
         public async Task<IActionResult> Delete([FromRoute] int id)
         {
-            _permissionRepository.Delete(id);
-            return Ok();
+            DeletePermissionCommand command = new() { Id = id };
+            DeletedPermissionDto result = await Mediator.Send(command);
+            return Ok(result);
         }
 
         [HttpPost("update")]
-        public async Task<IActionResult> Update([FromBody] PermissionToUpdate permissionToUpdate)
+        public async Task<IActionResult> Update([FromBody] PermissionToUpdateDto permissionToUpdateDto)
         {
-            Permission permission = _mapper.Map<Permission>(permissionToUpdate);
-            ValidatePermission(permission);
-            _permissionRepository.Update(permission);
-            return Ok();
+            UpdatePermissionCommand command = new() { PermissionToUpdateDto = permissionToUpdateDto };
+            UpdatedPermissionDto result = await Mediator.Send(command);
+            return Ok(result);
         }
 
         [HttpGet("getall")]
         public async Task<IActionResult> GetAll()
         {
-            IList<Permission> permissions = _permissionRepository.GetAll();
-            return Ok(permissions);
+            GetAllPermissionQuery query = new();
+            GetAllPermissionsModel model = await Mediator.Send(query);
+            return Ok(model);
         }
         [HttpGet("getbyid/{id}")]
         public async Task<IActionResult> GetById([FromRoute] int id)
         {
-            Permission permission = _permissionRepository.GetById(id);
-            return Ok(permission);
+            GetByIdPermissionQuery query = new GetByIdPermissionQuery() { Id = id };
+            GetByIdPermissionDto result = await Mediator.Send(query);
+            return Ok(result);
         }
 
         
@@ -65,18 +73,9 @@ namespace PermitRegistrationSystem.Controllers
         [HttpGet("getByPersonId/{personId}")]
         public async Task<IActionResult> GetByPersonId([FromRoute] int personId)
         {
-            PermissionByUserDto permissionByUserDto = _permissionRepository.GetByPersonId(personId);
-            return Ok(permissionByUserDto);
-        }
-
-
-        private void ValidatePermission(Permission permission)
-        {
-            PermissionValidator validator = new PermissionValidator();
-            ValidationResult result = validator.Validate(permission);
-            if (result.IsValid)
-                return;
-            throw new ArgumentException(result.Errors.ToString());
+            GetPermissionsByPersonIdQuery query = new GetPermissionsByPersonIdQuery() { PersonId = personId };
+            GetPermissionsByPersonIdModel model = await Mediator.Send(query);
+            return Ok(model);
         }
 
     }
